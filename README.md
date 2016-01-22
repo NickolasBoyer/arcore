@@ -10,6 +10,8 @@ needing to clone the entire Arduino repository.
 Currently the only addition is support for MIDI-USB for the Arduino Leonardo and similar boards, but this should
 serve as a good base for other modifications to the cores libraries. Let me know if you do anything interesting with this!
 
+This fork^ has been forked by me and i've added support for various functions found in the teensy library, currently only the output functions have been added but i will be providing the input functions (handles etc.) too shortly.
+
 ## Installation and Usage
 
 Version 1.5.4 (or greater) of the Arduino IDE is required to build projects with this library.
