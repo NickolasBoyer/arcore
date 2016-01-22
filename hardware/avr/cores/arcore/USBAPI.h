@@ -72,8 +72,15 @@ class MIDIUSB_
 {
 private:
     midi_buffer _rx_buffer;
-public:
 
+   void (*handleNoteOff)(uint8_t ch, uint8_t note, uint8_t vel);
+	void (*handleNoteOn)(uint8_t ch, uint8_t note, uint8_t vel);
+	void (*handleVelocityChange)(uint8_t ch, uint8_t note, uint8_t vel);
+	void (*handleControlChange)(uint8_t ch, uint8_t, uint8_t);
+	void (*handleProgramChange)(uint8_t ch, uint8_t);
+	void (*handleAfterTouch)(uint8_t ch, uint8_t);
+	void (*handlePitchChange)(uint8_t ch, int pitch);
+public:
     virtual int available(void);
     virtual void accept(void);
     virtual MIDIEvent peek(void);
@@ -87,6 +94,30 @@ public:
     virtual void sendProgramChange(byte, byte); // Added to mimic teensy library 
     virtual void sendAfterTouch(byte, byte); // Added to mimic teensy library 
     virtual void sendPitchBend(byte, byte); //does not work yet
+    virtual void sendSysEx(uint8_t, const uint8_t*); // Stolen from PJRC.com
+
+	inline void setHandleNoteOff(void (*fptr)(uint8_t channel, uint8_t note, uint8_t velocity)) {
+		handleNoteOff = fptr;
+	};
+	inline void setHandleNoteOn(void (*fptr)(uint8_t channel, uint8_t note, uint8_t velocity)) {
+		handleNoteOn = fptr;
+	};
+	inline void setHandleVelocityChange(void (*fptr)(uint8_t channel, uint8_t note, uint8_t velocity)) {
+		handleVelocityChange = fptr;
+	};
+	inline void setHandleControlChange(void (*fptr)(uint8_t channel, uint8_t control, uint8_t value)) {
+		handleControlChange = fptr;
+	};
+	inline void setHandleProgramChange(void (*fptr)(uint8_t channel, uint8_t program)) {
+		handleProgramChange = fptr;
+	};
+	inline void setHandleAfterTouch(void (*fptr)(uint8_t channel, uint8_t pressure)) {
+		handleAfterTouch = fptr;
+	};
+	inline void setHandlePitchChange(void (*fptr)(uint8_t channel, int pitch)) {
+		handlePitchChange = fptr;
+	};    
+	void midi_loop();
     operator bool();
 };
 extern MIDIUSB_ MIDIUSB;
