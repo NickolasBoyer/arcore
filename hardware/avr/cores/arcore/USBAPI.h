@@ -84,9 +84,9 @@ public:
     virtual void sendNoteOff(byte, byte, byte); // Added to mimic teensy library 
     virtual void sendControlChange(byte, byte, byte); // Added to mimic teensy library 
     virtual void sendPolyPressure(byte, byte, byte); // Added to mimic teensy library 
-    virtual void sendProgramChange(byte, byte, byte); // Added to mimic teensy library 
-    virtual void sendAfterTouch(byte, byte, byte); // Added to mimic teensy library 
-    // virtual void sendPitchBend(byte, byte, byte); does not work yet
+    virtual void sendProgramChange(byte, byte); // Added to mimic teensy library 
+    virtual void sendAfterTouch(byte, byte); // Added to mimic teensy library 
+    virtual void sendPitchBend(byte, byte); //does not work yet
     operator bool();
 };
 extern MIDIUSB_ MIDIUSB;
