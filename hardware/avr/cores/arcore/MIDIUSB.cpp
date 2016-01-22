@@ -178,31 +178,70 @@ void MIDIUSB_::sendNoteOff(byte pitch, byte velocity, byte channel) {
 
 void MIDIUSB_::sendControlChange(byte control, byte value, byte channel) {
   MIDIEvent event = {0x0B, 0xB0 | channel, control, value};
-  MIDIUSB.write(event);
+  write(event);
   USB_Flush(MIDI_TX);
 }
 
 void MIDIUSB_::sendPolyPressure(byte control, byte value, byte channel) {
   MIDIEvent event = {0x0A, 0xA0 | channel, control, value};
-  MIDIUSB.write(event);
+  write(event);
   USB_Flush(MIDI_TX);
 }
 
 void MIDIUSB_::sendProgramChange(byte program, byte channel) {
-  MIDIEvent event = {0x0C, 0xC0 | channel, program, 0x0};
-  MIDIUSB.write(event);
+  MIDIEvent event = {0x0C, 0xC0 | channel, program, 0};
+  write(event);
   USB_Flush(MIDI_TX);
 }
 
 void MIDIUSB_::sendAfterTouch(byte pressure, byte channel) {
-  MIDIEvent event = {0x0D, 0xD0 | channel, pressure, 0x0};
-  MIDIUSB.write(event);
+  MIDIEvent event = {0x0D, 0xD0 | channel, pressure, 0};
+  write(event);
   USB_Flush(MIDI_TX);
 }
 void MIDIUSB_::sendPitchBend(byte value, byte channel) { // Not working right now third byte must contain half of value MSB first
-  MIDIEvent event = {0x0E, 0xE0 | channel, value, 0x0};
-  MIDIUSB.write(event);
+  MIDIEvent event = {0x0E, 0xE0 | channel, value, (value >> 7)};
+  write(event);
   USB_Flush(MIDI_TX);
+}
+//Stolen from PJRC.COM
+void MIDIUSB_::sendSysEx(uint8_t length, const uint8_t *data) {
+  // TODO: MIDI 2.5 lib automatically adds start and stop bytes
+  while (length > 3) {
+    MIDIEvent event ={0x04, data[0], data[1], data[2]};
+    write(event);
+    data += 3;
+    length -= 3;
+  }
+  if (length == 3) {
+    MIDIEvent event ={0x07, data[0], data[1], data[2]};
+    write(event);
+  } else if (length == 2) {
+    MIDIEvent event ={0x06, data[0], data[1], 0};
+    write(event);
+  } else if (length == 1) {
+    MIDIEvent event ={0x05, data[0], 0, 0};
+    write(event);
+  }
+}
+
+void MIDIUSB_::midi_loop(){
+  while(MIDIUSB.available() > 0) {  // Repeat while notes are available to read.
+      MIDIEvent e;
+      e = MIDIUSB.read();
+      if(e.type == 0x09){
+         if (handleNoteOff) (*handleNoteOff)((e.m1-143), e.m2, e.m3);
+      }
+      if(e.type == 0x08){ 
+         if (handleNoteOn) (*handleNoteOn)((e.m1-127), e.m2, e.m3);
+      }
+      if(e.type == 0x0B){
+         if (handleControlChange) (*handleControlChange)((e.m1-127), e.m2, e.m3);
+      }
+      MIDIUSB.write(e);
+      MIDIUSB.flush();
+   }
+
 }
 
 
