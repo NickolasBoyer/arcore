@@ -162,6 +162,50 @@ size_t MIDIUSB_::write(MIDIEvent c)
     }
 }
 
+void MIDIUSB_::sendNoteOn(byte pitch, byte velocity, byte channel) {
+
+  MIDIEvent noteOn = {0x09, 0x90 | channel, pitch, velocity};
+  write(noteOn);
+  USB_Flush(MIDI_TX);
+}
+
+void MIDIUSB_::sendNoteOff(byte pitch, byte velocity, byte channel) {
+
+  MIDIEvent noteOff = {0x08, 0x80 | channel, pitch, velocity};
+  write(noteOff);
+  USB_Flush(MIDI_TX);
+}
+
+void MIDIUSB_::sendControlChange(byte control, byte value, byte channel) {
+  MIDIEvent event = {0x0B, 0xB0 | channel, control, value};
+  MIDIUSB.write(event);
+  USB_Flush(MIDI_TX);
+}
+
+void MIDIUSB_::sendPolyPressure(byte control, byte value, byte channel) {
+  MIDIEvent event = {0x0A, 0xA0 | channel, control, value};
+  MIDIUSB.write(event);
+  USB_Flush(MIDI_TX);
+}
+
+void MIDIUSB_::sendProgramChange(byte program, byte channel) {
+  MIDIEvent event = {0x0C, 0xC0 | channel, program, 0x0};
+  MIDIUSB.write(event);
+  USB_Flush(MIDI_TX);
+}
+
+void MIDIUSB_::sendAfterTouch(byte pressure, byte channel) {
+  MIDIEvent event = {0x0D, 0xD0 | channel, pressure, 0x0};
+  MIDIUSB.write(event);
+  USB_Flush(MIDI_TX);
+}
+void MIDIUSB_::sendPitchBend(byte value, byte channel) { // Not working right now third byte must contain half of value MSB first
+  MIDIEvent event = {0x0E, 0xE0 | channel, value, 0x0};
+  MIDIUSB.write(event);
+  USB_Flush(MIDI_TX);
+}
+
+
 // This operator is a convenient way for a sketch to check whether the
 // port has actually been configured and opened by the host (as opposed
 // to just being connected to the host).  It can be used, for example, in 
