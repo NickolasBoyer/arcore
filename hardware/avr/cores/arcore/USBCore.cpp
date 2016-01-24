@@ -645,7 +645,7 @@ ISR(USB_GEN_vect)
 #ifdef MIDI_ENABLED
     USB_Flush(MIDI_TX);
     if (USB_Available(MIDI_RX))
-		  MIDIUSB.accept();
+		  usbMIDI.accept();
 #endif
 		// check whether the one-shot period has elapsed.  if so, turn off the LED
 		if (TxLEDPulse && !(--TxLEDPulse))
