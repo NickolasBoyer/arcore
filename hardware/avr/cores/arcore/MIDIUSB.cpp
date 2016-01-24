@@ -226,9 +226,9 @@ void MIDIUSB_::sendSysEx(uint8_t length, const uint8_t *data) {
 }
 
 void MIDIUSB_::midi_loop(){
-  while(MIDIUSB.available() > 0) {  // Repeat while notes are available to read.
+  while(available() > 0) {  // Repeat while notes are available to read.
       MIDIEvent e;
-      e = MIDIUSB.read();
+      e = read();
       if(e.type == 0x09){
          if (handleNoteOff) (*handleNoteOff)((e.m1-143), e.m2, e.m3);
       }
@@ -238,8 +238,8 @@ void MIDIUSB_::midi_loop(){
       if(e.type == 0x0B){
          if (handleControlChange) (*handleControlChange)((e.m1-127), e.m2, e.m3);
       }
-      MIDIUSB.write(e);
-      MIDIUSB.flush();
+      write(e);
+      flush();
    }
 
 }
@@ -254,7 +254,7 @@ MIDIUSB_::operator bool() {
     return USB_Ready(MIDI_TX);
 }
 
-MIDIUSB_ MIDIUSB;
+MIDIUSB_ usbMIDI;
 
 
 #endif
