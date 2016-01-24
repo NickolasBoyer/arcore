@@ -236,7 +236,7 @@ void MIDIUSB_::midi_loop(){
          if (handleNoteOn) (*handleNoteOn)((e.m1-127), e.m2, e.m3);
       }
       if(e.type == 0x0B){
-         if (handleControlChange) (*handleControlChange)((e.m1-127), e.m2, e.m3);
+         if (handleControlChange) (*handleControlChange)((e.m1-175), e.m2, e.m3);
       }
       write(e);
       flush();
