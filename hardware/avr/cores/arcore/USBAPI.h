@@ -120,7 +120,7 @@ public:
 	void midi_loop();
     operator bool();
 };
-extern MIDIUSB_ MIDIUSB;
+extern MIDIUSB_ usbMIDI;
 
 
 //================================================================================
