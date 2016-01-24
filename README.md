@@ -10,7 +10,7 @@ needing to clone the entire Arduino repository.
 Currently the only addition is support for MIDI-USB for the Arduino Leonardo and similar boards, but this should
 serve as a good base for other modifications to the cores libraries. Let me know if you do anything interesting with this!
 
-This fork^ has been forked by me and i've added support for various functions found in the teensy library, currently only the output functions have been added but i will be providing the input functions (handles etc.) too shortly.
+This fork^ has been forked by me and i've added support for various functions found in the teensy library, currently only all the output functions have been added but i will be providing the rest of the input functions (handles etc.) too shortly.
 
 ## Installation and Usage
 
@@ -43,42 +43,18 @@ For more info on the MIDI-USB event format, see the official [USB-MIDI specifica
 ### Send a note-on and note-off every two seconds
 
 ```cpp
-// First parameter is the event type (0x09 = note on, 0x08 = note off).
-// Second parameter is note-on/note-off, combined with the channel.
+// First parameter is the note number (48 = middle C).
+// Second parameter is the velocity (64 = normal, 127 = fastest).
+// Third parameter is the Channel (0 = 1)
 // Channel can be anything between 0-15. Typically reported to the user as 1-16.
-// Third parameter is the note number (48 = middle C).
-// Fourth parameter is the velocity (64 = normal, 127 = fastest).
-
-void noteOn(byte channel, byte pitch, byte velocity) {
-  MIDIEvent noteOn = {0x09, 0x90 | channel, pitch, velocity};
-  MIDIUSB.write(noteOn);
-}
-
-void noteOff(byte channel, byte pitch, byte velocity) {
-  MIDIEvent noteOff = {0x08, 0x80 | channel, pitch, velocity};
-  MIDIUSB.write(noteOff);
-}
-
-// First parameter is the event type (0x0B = control change).
-// Second parameter is the event type, combined with the channel.
-// Third parameter is the control number number (0-119).
-// Fourth parameter is the control value (0-127).
-
-void controlChange(byte channel, byte control, byte value) {
-  MIDIEvent event = {0x0B, 0xB0 | channel, control, value};
-  MIDIUSB.write(event);
-}
-
 void loop() {
-  noteOn(0, 48, 64);   // Channel 0, middle C, normal velocity
-  MIDIUSB.flush();
+  usbMIDI.sendNoteOn(48, 64, 0);   // Channel 0, middle C, normal velocity
   delay(500);
-  
-  noteOff(0, 48, 64);  // Channel 0, middle C, normal velocity
-  MIDIUSB.flush();
+
+  usbMIDI.sendNoteOff(48, 64, 0);   // Channel 0, middle C, normal velocity
   delay(1500);
   
-  // controlChange(0, 10, 65); // Set the value of controller 10 on channel 0 to 65
+  usbMIDI.sendControlChange(10, 65, 0); // Set the value of controller 10 on channel 0 to 65
 }
 
 void setup() {
@@ -86,7 +62,7 @@ void setup() {
 }
 ```
 
-### Read and echo MIDI messages back to the PC
+### Read and echo MIDI messages back to the PC (old not working like this anymore)
 
 ```cpp
 void loop() {
